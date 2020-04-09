@@ -42,15 +42,16 @@ def cubic_solver(coefficients,diagram,B):
         
         z_liq = (alfa + 2* sqrt(-C)*cos(theta/3+(2*pi/3)))/3
         z_vap = (alfa + 2* sqrt(-C)*cos(theta/3))/3
-        z_extra =  (alfa + 2* sqrt(-C)*cos(theta/3+(4*pi/3)))/3
+        
         
         if (diagram):
+            z_extra =  (alfa + 2* sqrt(-C)*cos(theta/3+(4*pi/3)))/3
             return(z_vap,z_liq,z_extra)
         
         if(z_liq < B):
             z_liq = (alfa + 2* sqrt(-C)*cos(theta/3))/3
         
-        return (z_vap,z_liq)
+        return (z_liq,z_vap)
         
     elif(Q>0):
         first = -D+sqrt(Q)

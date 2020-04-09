@@ -1,34 +1,36 @@
 from ..helpers.equationsOfState import peng_robinson, redlich_kwong_soave
-from ..helpers.alfaFunctions import pr78
+from ..helpers.alfaFunctions import alfa_peng_robinson
 from ..helpers.stateFunctionsHelpers import A_fun, B_fun, getCubicCoefficients
 from ..solvers.cubicSolver import cubic_solver
-from numpy import log, exp
+from numpy import log, exp, sqrt
+from scipy.optimize import fsolve
 
 
-def solve_eos(t,p,tc,pc,acentrico,method='pr',alfa='pr78',diagram=False):
+
+def solve_eos(t,p,tc,pc,acentric,method='pr',alfa='alfa_peng_robinson',diagram=False,properties=False):
     R=83.14
     
     # Method selection
     if(method == 'pr'):
-        u,w,omega_a,omega_b = peng_robinson()
+        u,w,omega_a,omega_b,L = peng_robinson()
     elif(method=='rks'):
-        u,w,omega_a,omega_b = redlich_kwong_soave()
+        u,w,omega_a,omega_b,L = redlich_kwong_soave()
     else:
         return 'Method: '+ method+ ' does not exist, define an allowed method'
     #print(u,w,omega_a,omega_b)
     
     # Alpha funciton selection
-    if(alfa == 'pr78'):
-        alfa = pr78(t,tc,acentrico)
+    if(alfa == 'alfa_peng_robinson'):
+        alfa = alfa_peng_robinson(t,tc,acentric)
     else:
         return 'Alpha: '+ alfa+ ' does not exist, define an allowed alfa'
-    #print(alfa)
+    
     B = B_fun(t,p,tc,pc,omega_b)
-    #print(B)
-    A = A_fun(t,p,tc,pc,acentrico,omega_a,alfa)
-    #print(A)
+    
+    A = A_fun(t,p,tc,pc,acentric,omega_a,alfa)
+    
     coefficients = getCubicCoefficients(A,B,u,w)
-    #print(coefficients)
+  
     x= cubic_solver(coefficients,diagram,B)
    
     if(diagram):
@@ -43,10 +45,33 @@ def solve_eos(t,p,tc,pc,acentrico,method='pr',alfa='pr78',diagram=False):
         z_vap=x
         
     
-    ln_liq_fugacity = (z_liq-1)-log(z_liq-B) + A/B * 1/(u-w)*log((z_liq+w*B)/(z_liq+u*B))
-    ln_vap_fugacity = (z_vap-1)-log(z_vap-B) + A/B * 1/(u-w)*log((z_vap+w*B)/(z_vap+u*B))
+        
+    ln_liq_fugacity_coef = -log(z_liq-B) + (z_liq-1) + A/B *L(z_liq,B)
+    ln_vap_fugacity_coef = -log(z_vap-B)+(z_vap-1) + A/B * L(z_vap,B)
+   
+    liq_fugacity = exp(ln_liq_fugacity_coef)*p
+    vap_fugacity = exp(ln_vap_fugacity_coef)*p
     
-    liq_fugacity = exp(ln_liq_fugacity)
-    vap_fugacity = exp(ln_vap_fugacity)
     
+    if(properties):
+        
+ 
     return (liq_fugacity, vap_fugacity)
+
+
+
+def solve_VLE(t,p,tc,pc,acentric,solving_for='pressure',method='pr',alfa='alfa_peng_robinson'):
+    if(solving_for=='pressure'):
+        print('Solving for pressure, given temperature')
+        print(fsolve(vle_pressure_objective_function,p,args=(t,tc,pc,acentric,method,alfa),full_output=1))
+    elif(solving_for=='temperature'):
+        print('Solving for temperature, given pressure')
+        print(fsolve(vle_temperature_objective_function,t,args=(p,tc,pc,acentric,method,alfa),full_output=1))
+        
+def vle_pressure_objective_function(p,t,tc,pc,acentric,method='pr',alfa='alfa_peng_robinson'):
+    liq_fugacity, vap_fugacity = solve_eos(t,p,tc,pc,acentric,method,diagram=False)
+    return liq_fugacity-vap_fugacity
+
+def vle_temperature_objective_function(t,p,tc,pc,acentric,method='pr',alfa='alfa_peng_robinson'):
+    liq_fugacity, vap_fugacity = solve_eos(t,p,tc,pc,acentric,method,diagram=False)
+    return liq_fugacity-vap_fugacity

@@ -1,4 +1,4 @@
-from numpy import sqrt
+from numpy import sqrt, log
         
     
 def peng_robinson():
@@ -6,11 +6,20 @@ def peng_robinson():
     w=-1
     omega_a = 0.45723553
     omega_b = 0.077796074
-    return (u,w,omega_a,omega_b)
+    
+    def L(z,B):
+        return log((z+B*(1+sqrt(2)))/(z+B*(1-sqrt(2))))/(-2*sqrt(2))
+    
+    return (u,w,omega_a,omega_b,L)
+
 
 def redlich_kwong_soave():
     u=1
     w=0
     omega_a = 0.42748023
     omega_b = 0.08664035
-    return (u,w,omega_a,omega_b)
+    
+    def L(z,B):
+        return (log((z+B)/z))
+    
+    return (u,w,omega_a,omega_b,L)

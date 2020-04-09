@@ -5,8 +5,8 @@ def soave(t,tc,acentric):
     reduced_temperature=t/tc
     return (1+m*(1-sqrt(reduced_temperature)))**2
 
-def peng_robinson(t,tc,acentric):
-    m=0.37464+1.54226*acentric-0.2699*acentric**2
+def alfa_peng_robinson(t,tc,acentric):
+    m=0.37464+1.54226*acentric-0.26992*acentric**2
     reduced_temperature=t/tc
     return (1+m*(1-sqrt(reduced_temperature)))**2
 
@@ -14,7 +14,7 @@ def pr78(t,tc,acentric):
     if(acentric>0.49):
         m=0.379642+1.48503*acentric-0.164423*acentric**2+0.016666*acentric**3
     else:
-        m=0.37464+1.54226*acentric-0.2699*acentric**2
+        m=0.37464+1.54226*acentric-0.26992*acentric**2
         
     reduced_temperature=t/tc
     return (1+m*(1-sqrt(reduced_temperature)))**2
