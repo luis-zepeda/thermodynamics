@@ -101,6 +101,7 @@ def get_ideal_enthalpy(heat_capacity,t):
     number,constants = heat_capacity
     models=TemperatureCorrelations()
     heat_capacity_equation =models.equation_selector(number)
+    print('cp: ',heat_capacity_equation(t,constants))
     enthalpy,_ = quad(heat_capacity_equation,298,t,args=(constants,))
     return enthalpy
     
