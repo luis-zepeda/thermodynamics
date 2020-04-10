@@ -1,4 +1,6 @@
-def a_fun(t,tc,pc,acentrico,omega_a,alfa):
+from scipy.misc import derivative
+
+def a_fun(t,tc,pc,acentric,omega_a,alfa):
     R = 83.14
     return omega_a*(R*tc)**2*alfa/pc
 
@@ -6,11 +8,18 @@ def b_fun(tc,pc,omega_b):
     R = 83.14
     return omega_b*(R*tc)/pc
 
-def A_fun(t,p,tc,pc,acentrico,omega_a,alfa):
+def A_fun(t,p,tc,pc,acentric,omega_a,alfa):
     R = 83.14
-    a = a_fun(t,tc,pc,acentrico,omega_a,alfa)
+    a = a_fun(t,tc,pc,acentric,omega_a,alfa)
     A = (a*p)/(R*t)**2
     return A
+
+def dAdT_fun(t,p,tc,pc,acentric,omega_a,alfa):
+    R=83.14
+    dalfa=derivative(alfa,t,args=(tc,acentric))
+    print('dalfa: ',dalfa)
+    d_a = a_fun(t,tc,pc,acentric,omega_a,dalfa)
+    return(t*d_a)*(p/(R*t)**2)
 
 def B_fun(t,p,tc,pc,omega_b):
     R = 83.14
