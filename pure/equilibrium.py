@@ -1,5 +1,5 @@
 from ..helpers.equationsOfState import peng_robinson, redlich_kwong_soave
-from ..helpers.alfaFunctions import alfa_peng_robinson
+from ..helpers.alfaFunctions import alfa_peng_robinson, soave
 from ..helpers.stateFunctionsHelpers import A_fun, B_fun, getCubicCoefficients, dAdT_fun
 #from ..helpers.temperatureCorrelations import equation_selector
 from ..solvers.cubicSolver import cubic_solver
@@ -25,6 +25,9 @@ def solve_eos(t,p,tc,pc,acentric,method='pr',alfa='alfa_peng_robinson',diagram=F
     if(alfa == 'alfa_peng_robinson'):
         alfa = alfa_peng_robinson(t,tc,acentric)
         alfa_fun = alfa_peng_robinson
+    elif(alfa == 'soave'):
+        alfa = soave(t,tc,acentric)
+        alfa_fun = soave 
     else:
         return 'Alpha: '+ alfa+ ' does not exist, define an allowed alfa'
     
@@ -54,6 +57,8 @@ def solve_eos(t,p,tc,pc,acentric,method='pr',alfa='alfa_peng_robinson',diagram=F
    
     liq_fugacity = exp(ln_liq_fugacity_coef)*p
     vap_fugacity = exp(ln_vap_fugacity_coef)*p
+    print('zliq',z_liq)
+    print('z_vap',z_vap)
     
     
     if(properties):
@@ -65,6 +70,7 @@ def solve_eos(t,p,tc,pc,acentric,method='pr',alfa='alfa_peng_robinson',diagram=F
         
         dAdt =  dAdT_fun(t,p,tc,pc,acentric,omega_a,alfa_fun)
         print('dAdt: ',dAdt)
+        
         enthalpy_liq = get_real_enthalpy(ideal_enthalpy,t,z_liq,A,dAdt,B,L)
         enthalpy_vap = get_real_enthalpy(ideal_enthalpy,t,z_vap,A,dAdt,B,L)
         
