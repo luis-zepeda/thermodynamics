@@ -8,7 +8,7 @@ def peng_robinson():
     omega_b = 0.077796074
     
     def L(z,B):
-        return log((z+B*(1+sqrt(2)))/(z+B*(1-sqrt(2))))/(2*sqrt(2))
+        return log((z+B*(1+sqrt(2)))/(z+B*(1-sqrt(2))))/(-2*sqrt(2))
     
     return (u,w,omega_a,omega_b,L)
 

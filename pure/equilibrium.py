@@ -3,8 +3,8 @@ from ..helpers.alfaFunctions import alfa_peng_robinson, soave
 from ..helpers.stateFunctionsHelpers import A_fun, B_fun, getCubicCoefficients, dAdT_fun
 #from ..helpers.temperatureCorrelations import equation_selector
 from ..solvers.cubicSolver import cubic_solver
-from numpy import log, exp, sqrt
-from scipy.optimize import fsolve
+from numpy import log, exp, sqrt,absolute
+from scipy.optimize import fsolve, newton, root
 from scipy.integrate import quad
 from ..helpers.temperatureCorrelations import TemperatureCorrelations
 
@@ -57,9 +57,7 @@ def solve_eos(t,p,tc,pc,acentric,method='pr',alfa='alfa_peng_robinson',diagram=F
    
     liq_fugacity = exp(ln_liq_fugacity_coef)*p
     vap_fugacity = exp(ln_vap_fugacity_coef)*p
-    print('zliq',z_liq)
-    print('z_vap',z_vap)
-    
+        
     
     if(properties):
         ideal_enthalpy = get_ideal_enthalpy(heat_capacity,t)/1000 # kmol to mol
@@ -88,18 +86,23 @@ def solve_eos(t,p,tc,pc,acentric,method='pr',alfa='alfa_peng_robinson',diagram=F
 
 def solve_VLE(t,p,tc,pc,acentric,solving_for='pressure',method='pr',alfa='alfa_peng_robinson'):
     if(solving_for=='pressure'):
-        print('Solving for pressure, given temperature')
-        print(fsolve(vle_pressure_objective_function,p,args=(t,tc,pc,acentric,method,alfa),full_output=1))
+        
+        P = root(vle_pressure_objective_function,p,args=(t,tc,pc,acentric,method,alfa))
+        return P.x[0]
     elif(solving_for=='temperature'):
-        print('Solving for temperature, given pressure')
-        print(fsolve(vle_temperature_objective_function,t,args=(p,tc,pc,acentric,method,alfa),full_output=1))
+       
+        T = root(vle_temperature_objective_function,t,args=(p,tc,pc,acentric,method,alfa))
+        
+        return T.x[0]
         
 def vle_pressure_objective_function(p,t,tc,pc,acentric,method='pr',alfa='alfa_peng_robinson'):
     liq_fugacity, vap_fugacity = solve_eos(t,p,tc,pc,acentric,method,diagram=False)
+    
     return liq_fugacity-vap_fugacity
 
 def vle_temperature_objective_function(t,p,tc,pc,acentric,method='pr',alfa='alfa_peng_robinson'):
     liq_fugacity, vap_fugacity = solve_eos(t,p,tc,pc,acentric,method,diagram=False)
+    #print(liq_fugacity-vap_fugacity)
     return liq_fugacity-vap_fugacity
 
 
