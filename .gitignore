@@ -1,2 +1,6 @@
 .ipynb_checkpoints
 __pycache__
+build
+dist
+thermodynamics_luis_zepeda.egg-info
+thermodynamics.egg-info
