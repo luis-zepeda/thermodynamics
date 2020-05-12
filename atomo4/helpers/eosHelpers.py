@@ -17,7 +17,7 @@ def A_fun(t,p,tc,pc,acentric,omega_a,alfa):
 def dAdT_fun(t,p,tc,pc,acentric,omega_a,alfa):
     R=83.14
     dalfa=derivative(alfa,t,args=(tc,acentric))
-    print('dalfa: ',dalfa)
+    
     d_a = a_fun(t,tc,pc,acentric,omega_a,dalfa)
     return(t*d_a)*(p/(R*t)**2)
 

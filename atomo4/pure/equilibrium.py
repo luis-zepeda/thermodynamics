@@ -1,35 +1,22 @@
-from ..helpers.equationsOfState import peng_robinson, redlich_kwong_soave
-from ..helpers.alfaFunctions import alfa_peng_robinson, soave
-from ..helpers.stateFunctionsHelpers import A_fun, B_fun, getCubicCoefficients, dAdT_fun
-#from ..helpers.temperatureCorrelations import equation_selector
+from ..helpers import eos
+from ..helpers import alfaFunctions
+from ..helpers.eosHelpers import A_fun, B_fun, getCubicCoefficients, dAdT_fun
 from ..solvers.cubicSolver import cubic_solver
+from ..helpers import temperatureCorrelations as tempCorr
+
 from numpy import log, exp, sqrt,absolute
 from scipy.optimize import fsolve, newton, root
 from scipy.integrate import quad
-from ..helpers.temperatureCorrelations import TemperatureCorrelations
 
 
-def solve_eos(t,p,tc,pc,acentric,method='pr',alfa='alfa_peng_robinson',diagram=False,properties=False,heat_capacity=None):
-    #R=83.14
-    
+
+def solve_eos(t,p,tc,pc,acentric,method='pr',alfa_function='alfa_peng_robinson',diagram=False,properties=False,heat_capacity=None):
     # Method selection
-    if(method == 'pr'):
-        u,w,omega_a,omega_b,L = peng_robinson()
-    elif(method=='rks'):
-        u,w,omega_a,omega_b,L = redlich_kwong_soave()
-    else:
-        return 'Method: '+ method+ ' does not exist, define an allowed method'
-    #print(u,w,omega_a,omega_b)
-    
-    # Alpha funciton selection
-    if(alfa == 'alfa_peng_robinson'):
-        alfa = alfa_peng_robinson(t,tc,acentric)
-        alfa_fun = alfa_peng_robinson
-    elif(alfa == 'soave'):
-        alfa = soave(t,tc,acentric)
-        alfa_fun = soave 
-    else:
-        return 'Alpha: '+ alfa+ ' does not exist, define an allowed alfa'
+    u,w,omega_a,omega_b,L = eos.selector(method)
+
+    # Alfa function selection    
+    alfa_fun = alfaFunctions.selector(alfa_function)
+    alfa= alfa_fun(t,tc,acentric)
     
     B = B_fun(t,p,tc,pc,omega_b)
     
@@ -50,7 +37,6 @@ def solve_eos(t,p,tc,pc,acentric,method='pr',alfa='alfa_peng_robinson',diagram=F
         z_liq=x
         z_vap=x
         
-    
         
     ln_liq_fugacity_coef = -log(z_liq-B) + (z_liq-1) + A/B *L(z_liq,B)
     ln_vap_fugacity_coef = -log(z_vap-B)+(z_vap-1) + A/B * L(z_vap,B)
@@ -58,7 +44,6 @@ def solve_eos(t,p,tc,pc,acentric,method='pr',alfa='alfa_peng_robinson',diagram=F
     liq_fugacity = exp(ln_liq_fugacity_coef)*p
     vap_fugacity = exp(ln_vap_fugacity_coef)*p
         
-    
     if(properties):
         ideal_enthalpy = get_ideal_enthalpy(heat_capacity,t)/1000 # kmol to mol
         ideal_entropy = get_ideal_entropy(heat_capacity,t,p)/1000 #kmol to mol
@@ -108,8 +93,7 @@ def vle_temperature_objective_function(t,p,tc,pc,acentric,method='pr',alfa='alfa
 
 def get_ideal_enthalpy(heat_capacity,t):
     number,constants = heat_capacity
-    models=TemperatureCorrelations()
-    heat_capacity_equation =models.equation_selector(number)
+    heat_capacity_equation =tempCorr.selector(number)
     print('cp: ',heat_capacity_equation(t,constants))
     enthalpy,_ = quad(heat_capacity_equation,298,t,args=(constants,))
     return enthalpy
@@ -119,8 +103,7 @@ def get_ideal_enthalpy(heat_capacity,t):
 def get_ideal_entropy(heat_capacity,t,p):
     R=8.314
     number,constants = heat_capacity
-    models = TemperatureCorrelations()
-    heat_capacity_equation = lambda t,constants :models.equation_selector(number)(t,constants)/t
+    heat_capacity_equation = lambda t,constants :tempCorr.selector(number)(t,constants)/t
     I,_ = quad(heat_capacity_equation,298,t,args=(constants,))
     entropy = I - R*log(p)
     return entropy

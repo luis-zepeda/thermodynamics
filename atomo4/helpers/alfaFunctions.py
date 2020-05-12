@@ -1,5 +1,20 @@
 from numpy import sqrt, exp
 
+def selector(alfa_function):
+    if(alfa_function == 'soave'):
+        fun = soave
+    elif(alfa_function == 'alfa_peng_robinson'):
+        fun=alfa_peng_robinson
+    elif(alfa_function == 'pr78'):
+        fun = pr78
+    elif(alfa_function == 'mathias'):
+        fun = mathias
+    elif(alfa_function == 'stryjek_vera'):
+        fun = stryjek_vera
+    else:
+        return 'Function: ' + alfa_function+ 'does not exist provide a valid function'
+    return fun
+    
 def soave(t,tc,acentric):
     m = 0.48508 + 1.55171*acentric-0.15613*acentric**2
     reduced_temperature=t/tc

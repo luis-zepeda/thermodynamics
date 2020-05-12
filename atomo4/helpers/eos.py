@@ -1,5 +1,13 @@
 from numpy import sqrt, log
-        
+
+def selector(method):
+    if(method=='pr'):
+        cubic = peng_robinson
+    elif(method=='rks'):
+        cubic = redlich_kwong_soave
+    else:
+        return 'Method: ' + method + ' does not exist, define an allowed method'
+    return cubic
     
 def peng_robinson():
     u=2
