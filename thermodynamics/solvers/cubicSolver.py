@@ -6,7 +6,7 @@ def cubic_solver_not_used(coefficients,diagram,B):
     p=(3*beta-alfa**2)/3
     q=(27*gamma-9*alfa*beta+2*alfa**3)/27
     R=(p/3)**3+(q/2)**2
-    
+    print('here')
     if(R>0):
         first = -q*0.5+sqrt(R)
         second = -q*0.5-sqrt(R)
@@ -29,7 +29,7 @@ def cubic_solver_not_used(coefficients,diagram,B):
         x = [x1,x2,x3]
         return (min(x),max(x))
     else:
-        return "cubic solver error"
+        raise Exception("cubic solver error")
     
 
 def cubic_solver(coefficients,diagram,B):
@@ -37,6 +37,7 @@ def cubic_solver(coefficients,diagram,B):
     C = 3*beta - alfa**2
     D = -alfa**3 + 4.5*alfa*beta-13.5*gamma
     Q = C **3 + D **2
+
     if(Q<= 0):
         theta = arccos(-D/(sqrt(-C**3)))
         
@@ -71,6 +72,6 @@ def cubic_solver(coefficients,diagram,B):
         return z
     
     else:
-        return "cubic solver error"
+        raise Exception("cubic solver error")
     
         

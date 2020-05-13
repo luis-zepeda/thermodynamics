@@ -12,17 +12,20 @@ from scipy.integrate import quad
 
 def solve_eos(t,p,tc,pc,acentric,method='pr',alfa_function='alfa_peng_robinson',diagram=False,properties=False,heat_capacity=None):
     # Method selection
-    u,w,omega_a,omega_b,L = eos.selector(method)
+    eos_fun=eos.selector(method)
+    u,w,omega_a,omega_b,L = eos_fun()
 
     # Alfa function selection    
     alfa_fun = alfaFunctions.selector(alfa_function)
     alfa= alfa_fun(t,tc,acentric)
+    
     
     B = B_fun(t,p,tc,pc,omega_b)
     
     A = A_fun(t,p,tc,pc,acentric,omega_a,alfa)
     
     coefficients = getCubicCoefficients(A,B,u,w)
+    
   
     x= cubic_solver(coefficients,diagram,B)
    
@@ -36,8 +39,8 @@ def solve_eos(t,p,tc,pc,acentric,method='pr',alfa_function='alfa_peng_robinson',
     else:
         z_liq=x
         z_vap=x
-        
-        
+    
+    
     ln_liq_fugacity_coef = -log(z_liq-B) + (z_liq-1) + A/B *L(z_liq,B)
     ln_vap_fugacity_coef = -log(z_vap-B)+(z_vap-1) + A/B * L(z_vap,B)
    
@@ -73,21 +76,21 @@ def solve_VLE(t,p,tc,pc,acentric,solving_for='pressure',method='pr',alfa='alfa_p
     if(solving_for=='pressure'):
         
         P = root(vle_pressure_objective_function,p,args=(t,tc,pc,acentric,method,alfa))
+       
         return P.x[0]
     elif(solving_for=='temperature'):
-       
         T = root(vle_temperature_objective_function,t,args=(p,tc,pc,acentric,method,alfa))
         
         return T.x[0]
         
 def vle_pressure_objective_function(p,t,tc,pc,acentric,method='pr',alfa='alfa_peng_robinson'):
+    
     liq_fugacity, vap_fugacity = solve_eos(t,p,tc,pc,acentric,method,diagram=False)
     
     return liq_fugacity-vap_fugacity
 
 def vle_temperature_objective_function(t,p,tc,pc,acentric,method='pr',alfa='alfa_peng_robinson'):
     liq_fugacity, vap_fugacity = solve_eos(t,p,tc,pc,acentric,method,diagram=False)
-    #print(liq_fugacity-vap_fugacity)
     return liq_fugacity-vap_fugacity
 
 

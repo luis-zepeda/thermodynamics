@@ -37,13 +37,11 @@ def pv(T,tc,pc,acentric,p_0=1,pvt=False):
     return 0 
 
 
-def pt(tc,pc,acentric,p_0=1,pvt=False):
+def pt(tc,pc,acentric,p_0=1,t_0=298,pvt=False):
     R=83.14
-    
-    
     pressures = linspace(p_0,pc)
-    t_0 = solve_VLE(200,pressures[0],tc,pc,acentric,solving_for='temperature')
-    temperatures=[t_0,]
+    t_first = solve_VLE(300,pressures[0],tc,pc,acentric,solving_for='temperature')
+    temperatures=[t_first,]
     for i in range(1,len(pressures)):
         t = solve_VLE(temperatures[i-1],pressures[i],tc,pc,acentric,solving_for='temperature')
         temperatures.append(t)
@@ -53,12 +51,6 @@ def pt(tc,pc,acentric,p_0=1,pvt=False):
         return (pressures,temperatures)
     
     plot(temperatures,pressures)
-    #xnew = linspace(temperatures.min(), temperatures.max(), 300)  
-
-    #y = CubicSpline(temperatures, pressures, xnew)
-
-    #plot(temperatures,f(temperatures))
-    #plot(temperatures,pressures)
     axhline(pc, color='k', linestyle='--')
     xlabel('Temperature (K)')
     ylabel('Pressure [bar]')
