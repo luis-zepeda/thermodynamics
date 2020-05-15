@@ -28,6 +28,6 @@ def solve_eos(t,p,tc,pc,acentric,compositions,kij,method='pr',alfa_function='alf
     Ai = A_fun(t,p,tc,pc,acentric,omega_a,alfa)
     Bi = B_fun(t,p,tc,pc,omega_b)
 
-    # esta es regla de mezclado 
-    B = sum(compositions*Bi)
+    # Mixing rules
+    
 
