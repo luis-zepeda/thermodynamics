@@ -1,4 +1,4 @@
-from numpy import sqrt, exp
+from numpy import sqrt, exp, where
 
 def selector(alfa_function):
     if(alfa_function == 'soave'):
@@ -26,25 +26,21 @@ def alfa_peng_robinson(t,tc,acentric):
     return (1+m*(1-sqrt(reduced_temperature)))**2
 
 def pr78(t,tc,acentric):
-    if(acentric>0.49):
-        m=0.379642+1.48503*acentric-0.164423*acentric**2+0.016666*acentric**3
-    else:
-        m=0.37464+1.54226*acentric-0.26992*acentric**2
-        
+    #if(acentric>0.49):
+    #    m=0.379642+1.48503*acentric-0.164423*acentric**2+0.016666*acentric**3
+    #else:
+    #    m=0.37464+1.54226*acentric-0.26992*acentric**2
+    m = where(acentric>0.49,0.379642+1.48503*acentric-0.164423*acentric**2+0.016666*acentric**3,0.37464+1.54226*acentric-0.26992*acentric**2)
     reduced_temperature=t/tc
     return (1+m*(1-sqrt(reduced_temperature)))**2
 
 
-def mathias(t,tc,acentric,A):
+def mathias(t,tc,acentric,qi=0):
     reduced_temperature=t/tc
-    if(t>tc):
-        c = 1 + m/2 + 0.3*A
-        alfa = exp(((c-1)/c)*(1-reduced_temperature**c))
-    
-    else:
-        m = 0.48508+1.55191*acentric-0.15613*acentric**2
-        alfa = (1+m*(1-reduced_temperature**(0.5))-A*(1-reduced_temperature)*(0.7-reduced_temperature))**2
-    
+    m = 0.48508+1.55191*acentric-0.15613*acentric**2
+    c = 1 + m/2 + 0.3*qi
+    alfa = where(t>tc,exp(2*((c-1)/c)*(1-reduced_temperature**c)),(1+m*(1-reduced_temperature**(0.5))-qi*(1-reduced_temperature)*(0.7-reduced_temperature))**2)
+        
     return alfa
 
 

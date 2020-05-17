@@ -1,4 +1,5 @@
 from scipy.misc import derivative
+from numpy import exp,log
 
 def a_fun(t,tc,pc,acentric,omega_a,alfa):
     R = 83.14
@@ -41,3 +42,13 @@ def getCubicCoefficients(A,B,u,w):
     beta = beta_coefficient(A,B,u,w)
     gamma = gamma_coefficient(A,B,u,w)
     return(alfa,beta,gamma)
+
+def getPureFugacity(z,A,B,L,p):
+    ln_fugacity_coef = -log(z-B) + (z-1) + A/B *L(z,B)
+    fugacity = exp(ln_fugacity_coef)*p
+    return fugacity
+
+def getMixFugacity(z,A,B,A_i,Bi,L,compositions,p):
+    ln_fugacity_coef = -log(z-B)+(z-1)*(Bi/B)+(A/B)*((Bi/B)-(A_i/A))*L(z,B)
+    fugacity = exp(ln_fugacity_coef)*compositions*p
+    return fugacity

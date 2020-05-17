@@ -1,6 +1,6 @@
 from ..helpers import eos
 from ..helpers import alfaFunctions
-from ..helpers.eosHelpers import A_fun, B_fun, getCubicCoefficients, dAdT_fun
+from ..helpers.eosHelpers import A_fun, B_fun, getCubicCoefficients, dAdT_fun, getPureFugacity
 from ..solvers.cubicSolver import cubic_solver
 from ..helpers import temperatureCorrelations as tempCorr
 
@@ -41,11 +41,13 @@ def solve_eos(t,p,tc,pc,acentric,method='pr',alfa_function='alfa_peng_robinson',
         z_vap=x
     
     
-    ln_liq_fugacity_coef = -log(z_liq-B) + (z_liq-1) + A/B *L(z_liq,B)
-    ln_vap_fugacity_coef = -log(z_vap-B)+(z_vap-1) + A/B * L(z_vap,B)
+    #ln_liq_fugacity_coef = -log(z_liq-B) + (z_liq-1) + A/B *L(z_liq,B)
+    #ln_vap_fugacity_coef = -log(z_vap-B)+(z_vap-1) + A/B * L(z_vap,B)
    
-    liq_fugacity = exp(ln_liq_fugacity_coef)*p
-    vap_fugacity = exp(ln_vap_fugacity_coef)*p
+    #liq_fugacity = exp(ln_liq_fugacity_coef)*p
+    #vap_fugacity = exp(ln_vap_fugacity_coef)*p
+    liq_fugacity = getPureFugacity(z_liq,A,B,L,p)
+    vap_fugacity = getPureFugacity(z_vap,A,B,L,p)
         
     if(properties):
         ideal_enthalpy = get_ideal_enthalpy(heat_capacity,t)/1000 # kmol to mol

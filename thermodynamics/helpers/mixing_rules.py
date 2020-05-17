@@ -1,4 +1,4 @@
-from np import array,sum, sqrt
+from numpy import array,sum, sqrt
 from scipy.misc import derivative
 
 def selector(mixing_rule):
@@ -7,7 +7,7 @@ def selector(mixing_rule):
     else:
         return 'Mixing rule does not exist'
 
-def van_der_waals(compositions,kij,Ai,Bi,alfa,alfa_fun,T):
+def van_der_waals(compositions,tc,acentric,kij,Ai,Bi,alfa,alfa_fun,T):
     shape = kij.shape
     B = sum(compositions*Bi)
     Aij=array([sqrt(Ai[i]*Ai[j])*(1-kij[i,j]) for i in range(0,len(Ai)) for j in range(0,len(Ai))]).reshape(shape)
