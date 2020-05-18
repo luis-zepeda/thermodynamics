@@ -52,3 +52,9 @@ def getMixFugacity(z,A,B,A_i,Bi,L,compositions,p):
     ln_fugacity_coef = -log(z-B)+(z-1)*(Bi/B)+(A/B)*((Bi/B)-(A_i/A))*L(z,B)
     fugacity = exp(ln_fugacity_coef)*compositions*p
     return fugacity
+
+def getMixFugacityCoef(z,A,B,A_i,Bi,L):
+    ln_fugacity_coef = -log(z-B)+(z-1)*(Bi/B)+(A/B)*((Bi/B)-(A_i/A))*L(z,B)
+    fugacity_coef = exp(ln_fugacity_coef)
+    return fugacity_coef
+    

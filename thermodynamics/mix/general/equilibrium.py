@@ -1,6 +1,6 @@
 from ...helpers import eos
 from ...helpers import alfaFunctions
-from ...helpers.eosHelpers import A_fun, B_fun, getCubicCoefficients, getMixFugacity
+from ...helpers.eosHelpers import A_fun, B_fun, getCubicCoefficients, getMixFugacity,getMixFugacityCoef
 from ...solvers.cubicSolver import cubic_solver
 from ...helpers import temperatureCorrelations as tempCorr
 from ...helpers import mixing_rules
@@ -42,8 +42,78 @@ def solve_eos(t,p,tc,pc,acentric,liq_compositions,vap_compositions,kij,method='p
     z_liq= cubic_solver(coefficients_liq,diagram,B_liq)
     z_vap = cubic_solver(coefficients_vap,diagram,B_vap)
 
-    #z,A,B,A_i,Bi,L,compositions
-    liq_fugacity = getMixFugacity(z_liq,A_liq,B_liq,A_i_liq,Bi,L,liq_compositions,p)
-    vap_fugacity = getMixFugacity(z_vap,A_vap,B_vap,A_i_vap,Bi,L,vap_compositions,p)
+   
+    z_liq = z_liq[0] if isinstance(z_liq,tuple) else z_liq
+    z_vap = z_vap[1] if isinstance(z_vap,tuple) else z_vap
     
-    return (liq_fugacity,vap_fugacity)
+    liq_fugacity_coef = getMixFugacityCoef(z_liq,A_liq,B_liq,A_i_liq,Bi,L)
+    vap_fugacity_coef = getMixFugacityCoef(z_vap,A_vap,B_vap,A_i_vap,Bi,L)
+    return (liq_fugacity_coef,vap_fugacity_coef)
+
+
+def bubble_temperature(t,p,tc,pc,acentric,liq_compositions,vap_compositions,kij,delta_t=0.1,method='pr',alfa_function='alfa_peng_robinson',mixing_rule='van_der_waals'):
+    liq_fugacity_coef,vap_fugacity_coef = solve_eos(t,p,tc,pc,acentric,liq_compositions,vap_compositions,kij,method,alfa_function,mixing_rule)
+    Ki = liq_fugacity_coef/vap_fugacity_coef
+    Sy = sum(Ki*liq_compositions)
+    E = log(Sy)
+    attempts=0
+    new_t=t
+    new_vap_compositions = vap_compositions
+    while(absolute(E) >= 1e-9):
+        print(E)
+
+        if(attempts == 100):
+            return 'Probleam can not be solved'
+        t0 = new_t + delta_t
+        liq_fugacity_coef0,vap_fugacity_coef0 = solve_eos(t0,p,tc,pc,acentric,liq_compositions,new_vap_compositions,kij,method,alfa_function,mixing_rule)
+        Ki0 =  liq_fugacity_coef0/vap_fugacity_coef0
+        Sy0 = sum(Ki0*liq_compositions)
+        E0 = log(Sy0)
+        new_t = (t*t0*(E0-E))/(t0*E0-t*E)
+        Sy = sum(Ki*liq_compositions)
+        new_vap_compositions = (Ki*liq_compositions)/Sy
+        liq_fugacity_coef,vap_fugacity_coef = solve_eos(new_t,p,tc,pc,acentric,liq_compositions,new_vap_compositions,kij,method,alfa_function,mixing_rule)
+        Ki = liq_fugacity_coef/vap_fugacity_coef
+        Sy = sum(Ki*liq_compositions)
+        E=log(Sy)
+        attempts +=1
+    
+    return(new_t,p,liq_compositions,new_vap_compositions)
+        
+
+
+def bubble_pressure(t,p,tc,pc,acentric,liq_compositions,vap_compositions,kij,delta_p=0.0001,method='pr',alfa_function='alfa_peng_robinson',mixing_rule='van_der_waals'):
+    liq_fugacity_coef,vap_fugacity_coef = solve_eos(t,p,tc,pc,acentric,liq_compositions,vap_compositions,kij,method,alfa_function,mixing_rule)
+    
+    Ki = liq_fugacity_coef/vap_fugacity_coef
+    Sy = sum(Ki*liq_compositions)
+    E = Sy -1
+    attempts=0
+    new_p=p
+    new_vap_compositions = vap_compositions
+  
+
+    while(absolute(E) >= 1e-9):
+        if(attempts == 100):
+            return 'Probleam can not be solved'
+        p0=new_p*(1+delta_p)
+        liq_fugacity_coef0,vap_fugacity_coef0 = solve_eos(t,p0,tc,pc,acentric,liq_compositions,new_vap_compositions,kij,method,alfa_function,mixing_rule)
+        Ki0 =  liq_fugacity_coef0/vap_fugacity_coef0
+        Sy0 = sum(Ki0*liq_compositions)
+        E0=Sy0-1
+        new_p = (new_p*p0*(E0-E))/(p0*E0-new_p*E)
+        Sy = sum(Ki*liq_compositions)
+        new_vap_compositions = (Ki*liq_compositions)/Sy
+        
+        
+       
+        ##
+        liq_fugacity_coef,vap_fugacity_coef = solve_eos(t,new_p,tc,pc,acentric,liq_compositions,new_vap_compositions,kij,method,alfa_function,mixing_rule)
+        Ki = liq_fugacity_coef/vap_fugacity_coef
+        Sy = sum(Ki*liq_compositions)
+        E = Sy -1
+        
+        attempts +=1
+       
+    
+    return(t,new_p,liq_compositions,new_vap_compositions)
