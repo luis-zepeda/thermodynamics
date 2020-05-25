@@ -57,7 +57,7 @@ def bubble_temperature(t,p,tc,pc,acentric,liq_compositions,vap_compositions,kij,
     attempts=0
     new_t=t
     new_vap_compositions = vap_compositions
-    
+
     while(absolute(E) >= 1e-9):
         if(attempts == 100):
             return 'Probleam can not be solved'
@@ -125,7 +125,7 @@ def dew_temperature(t,p,tc,pc,acentric,liq_compositions,vap_compositions,kij,del
         new_t = (new_t*t0*(E0-E))/(t0*E0-new_t*E)
         Sx = sum(vap_compositions/Ki)
         new_liq_compositions = vap_compositions/(Ki*Sx)
-        liq_fugacity_coef,vap_fugacity_coef = solve_eos(new_t,p,tc,pc,acentric,liq_compositions,new_vap_compositions,kij,method,alfa_function,mixing_rule)
+        liq_fugacity_coef,vap_fugacity_coef = solve_eos(new_t,p,tc,pc,acentric,new_liq_compositions,vap_compositions,kij,method,alfa_function,mixing_rule)
         Ki = liq_fugacity_coef/vap_fugacity_coef
         Sx = sum(vap_compositions/Ki)
         E = log(Sx)
@@ -148,15 +148,15 @@ def dew_pressure(t,p,tc,pc,acentric,liq_compositions,vap_compositions,kij,delta_
         p0=new_p*(1+delta_p)
         liq_fugacity_coef0,vap_fugacity_coef0 = solve_eos(t,p0,tc,pc,acentric,new_liq_compositions,vap_compositions,kij,method,alfa_function,mixing_rule)
         Ki0 =  liq_fugacity_coef0/vap_fugacity_coef0
-        Sx0 = sum(vap_conditions/Ki0)
+        Sx0 = sum(vap_compositions/Ki0)
         E0=Sx0-1
         new_p = (new_p*p0*(E0-E))/(p0*E0-new_p*E)
-        Sx = sum(vap_conditios/Ki)
-        new_liq_compositions = vap_conditions/(Ki*Sx)
-        liq_fugacity_coef,vap_fugacity_coef = solve_eos(t,new_p,tc,pc,acentric,liq_compositions,new_vap_compositions,kij,method,alfa_function,mixing_rule)
+        Sx = sum(vap_compositions/Ki)
+        new_liq_compositions = vap_compositions/(Ki*Sx)
+        liq_fugacity_coef,vap_fugacity_coef = solve_eos(t,new_p,tc,pc,acentric,new_liq_compositions,vap_compositions,kij,method,alfa_function,mixing_rule)
         Ki = liq_fugacity_coef/vap_fugacity_coef
-        Sy = sum(Ki*liq_compositions)
-        E = Sy -1 
+        Sx = sum(vap_compositions/Ki)
+        E = Sx -1 
         attempts +=1
           
     return(t,new_p,new_liq_compositions,vap_compositions)
