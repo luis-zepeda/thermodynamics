@@ -161,5 +161,21 @@ def dew_pressure(t,p,tc,pc,acentric,liq_compositions,vap_compositions,kij,delta_
           
     return(t,new_p,new_liq_compositions,vap_compositions)
 
-def flash():
-    pass
+def flash(t,p,tc,pc,acentric,feed_compositions,liq_compositions,vap_compositions,v_f,kij,delta_p=0.0001,method='pr',alfa_function='alfa_peng_robinson',mixing_rule='van_der_waals'):
+    tau=1
+    while(absolute(tau)> 1e-5):
+        liq_fugacity_coef,vap_fugacity_coef = solve_eos(t,p,tc,pc,acentric,liq_compositions,vap_compositions,kij,method,alfa_function,mixing_rule)
+        Ki = liq_fugacity_coef/vap_fugacity_coef
+        S = sum((feed_compositions*(Ki-1))/(1+(v_f*(Ki-1))))
+        S0 = sum((-feed_compositions*(Ki-1)**2)/(1+v_f*(Ki-1))**2)
+        v_f = v_f-(S/S0)
+        liq_compositions0 = feed_compositions/(1+v_f*(Ki-1))
+        Sx=sum(liq_compositions0)
+        liq_compositions = liq_compositions0/Sx
+        vap_compositions0=liq_compositions0*Ki
+        Sy=sum(vap_compositions0)
+        vap_compositions=vap_compositions0/Sy
+        tau=sum(absolute(liq_compositions*liq_fugacity_coef-vap_compositions*vap_fugacity_coef))
+    
+    return (t,p,feed_compositions,liq_compositions,vap_compositions,v_f)
+    
