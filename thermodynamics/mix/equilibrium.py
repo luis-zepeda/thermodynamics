@@ -1,9 +1,9 @@
-from ...helpers import eos
-from ...helpers import alfaFunctions
-from ...helpers.eosHelpers import A_fun, B_fun, getCubicCoefficients, getMixFugacity,getMixFugacityCoef
-from ...solvers.cubicSolver import cubic_solver
-from ...helpers import temperatureCorrelations as tempCorr
-from ...helpers import mixing_rules
+from ..helpers import eos
+from ..helpers import alfaFunctions
+from ..helpers.eosHelpers import A_fun, B_fun, getCubicCoefficients, getMixFugacity,getMixFugacityCoef
+from ..solvers.cubicSolver import cubic_solver
+from ..helpers import temperatureCorrelations as tempCorr
+from ..helpers import mixing_rules
 
 from numpy import log, exp, sqrt,absolute, array,sum
 from scipy.optimize import fsolve, newton, root
@@ -60,8 +60,8 @@ def bubble_temperature(t,p,tc,pc,acentric,liq_compositions,vap_compositions,kij,
 
     while(absolute(E) >= 1e-9):
         if(attempts == 100):
-            return 'Probleam can not be solved'
-        t0 = new_t + delta_t
+            return 'Problem can not be solved'
+        t0 = new_t + delta_t                    
         liq_fugacity_coef0,vap_fugacity_coef0 = solve_eos(t0,p,tc,pc,acentric,liq_compositions,new_vap_compositions,kij,method,alfa_function,mixing_rule)
         Ki0 =  liq_fugacity_coef0/vap_fugacity_coef0
         Sy0 = sum(Ki0*liq_compositions)
