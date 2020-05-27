@@ -59,7 +59,7 @@ def bubble_temperature(t,p,tc,pc,acentric,liq_compositions,vap_compositions,kij,
     new_vap_compositions = vap_compositions
 
     while(absolute(E) >= 1e-9):
-        if(attempts == 100):
+        if(attempts == 500):
             return 'Problem can not be solved'
         t0 = new_t + delta_t                    
         liq_fugacity_coef0,vap_fugacity_coef0 = solve_eos(t0,p,tc,pc,acentric,liq_compositions,new_vap_compositions,kij,method,alfa_function,mixing_rule)
@@ -77,7 +77,7 @@ def bubble_temperature(t,p,tc,pc,acentric,liq_compositions,vap_compositions,kij,
     
     return(new_t,p,liq_compositions,new_vap_compositions)
         
-def bubble_pressure(t,p,tc,pc,acentric,liq_compositions,vap_compositions,kij,delta_p=0.0001,method='pr',alfa_function='alfa_peng_robinson',mixing_rule='van_der_waals'):
+def bubble_pressure(t,p,tc,pc,acentric,liq_compositions,vap_compositions,kij,delta_p=0.001,method='pr',alfa_function='alfa_peng_robinson',mixing_rule='van_der_waals'):
     liq_fugacity_coef,vap_fugacity_coef = solve_eos(t,p,tc,pc,acentric,liq_compositions,vap_compositions,kij,method,alfa_function,mixing_rule)
     Ki = liq_fugacity_coef/vap_fugacity_coef
     Sy = sum(Ki*liq_compositions)
@@ -115,7 +115,7 @@ def dew_temperature(t,p,tc,pc,acentric,liq_compositions,vap_compositions,kij,del
     new_liq_compositions = liq_compositions
 
     while(absolute(E) >= 1e-9):
-        if(attempts == 100):
+        if(attempts == 500):
             return 'Probleam can not be solved'
         t0 = new_t + delta_t
         liq_fugacity_coef0,vap_fugacity_coef0 = solve_eos(t0,p,tc,pc,acentric,new_liq_compositions,vap_compositions,kij,method,alfa_function,mixing_rule)
@@ -133,7 +133,7 @@ def dew_temperature(t,p,tc,pc,acentric,liq_compositions,vap_compositions,kij,del
     
     return(new_t,p,new_liq_compositions,vap_compositions)
 
-def dew_pressure(t,p,tc,pc,acentric,liq_compositions,vap_compositions,kij,delta_p=0.0001,method='pr',alfa_function='alfa_peng_robinson',mixing_rule='van_der_waals'):
+def dew_pressure(t,p,tc,pc,acentric,liq_compositions,vap_compositions,kij,delta_p=0.001,method='pr',alfa_function='alfa_peng_robinson',mixing_rule='van_der_waals'):
     liq_fugacity_coef,vap_fugacity_coef = solve_eos(t,p,tc,pc,acentric,liq_compositions,vap_compositions,kij,method,alfa_function,mixing_rule)
     Ki = liq_fugacity_coef/vap_fugacity_coef
     Sx = sum(vap_compositions/Ki)
