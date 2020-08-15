@@ -44,7 +44,7 @@ def getCubicCoefficients(A,B,u,w):
     return(alfa,beta,gamma)
 
 def getPureFugacity(z,A,B,L,p):
-    ln_fugacity_coef = -log(z-B) + (z-1) + A/B *L(z,B)
+    ln_fugacity_coef = -log(z-B) + (z-1) - A/B *L(z,B)
     fugacity = exp(ln_fugacity_coef)*p
     return fugacity
 

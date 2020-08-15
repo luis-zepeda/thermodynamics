@@ -6,7 +6,7 @@ def cubic_solver_not_used(coefficients,diagram,B):
     p=(3*beta-alfa**2)/3
     q=(27*gamma-9*alfa*beta+2*alfa**3)/27
     R=(p/3)**3+(q/2)**2
-    print('here')
+
     if(R>0):
         first = -q*0.5+sqrt(R)
         second = -q*0.5-sqrt(R)
