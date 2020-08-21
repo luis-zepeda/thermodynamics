@@ -53,7 +53,9 @@ def solve_eos(t,p,tc,pc,acentric,method='pr',alfa_function='alfa_peng_robinson',
             "enthalpy_liq":enthalpy_liq,
             "enthalpy_vap":enthalpy_vap,
             "entropy_liq":entropy_liq,
-            "entropy_vap":entropy_vap
+            "entropy_vap":entropy_vap,
+            "z_liq":z_liq,
+            "z_vap":z_vap
         }
 
         return response

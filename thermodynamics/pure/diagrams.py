@@ -7,13 +7,13 @@ from mpl_toolkits.mplot3d import Axes3D
 #import plotly
 #import plotly.graph_objs as go
 
-def pv(T,tc,pc,acentric,p_0=1,pvt=False):
+def pv(T,tc,pc,acentric,p_0=1,method='pr',alfa_function='alfa_peng_robinson',pvt=False):
     volumes = []
     pres = linspace(p_0,pc)
     R=83.14
     pressures=[]
     for p in pres:
-        x=solve_eos(T,p,tc,pc,acentric,diagram=True)
+        x=solve_eos(T,p,tc,pc,acentric,method=method,alfa_function=alfa_function,diagram=True)
         if(isinstance(x,tuple)):
             volumes.append(x[0]*R*T/p)
             volumes.append(x[1]*R*T/p)
@@ -37,13 +37,13 @@ def pv(T,tc,pc,acentric,p_0=1,pvt=False):
     return 0 
 
 
-def pt(tc,pc,acentric,p_0=1,t_0=298,pvt=False):
+def pt(tc,pc,acentric,p_0=1,t_0=298,method='pr',alfa_function='alfa_peng_robinson',pvt=False):
     R=83.14
     pressures = linspace(p_0,pc)
-    t_first = solve_VLE(300,pressures[0],tc,pc,acentric,solving_for='temperature')
+    t_first = solve_VLE(300,pressures[0],tc,pc,acentric,method=method,alfa_function=alfa_function,solving_for='temperature')
     temperatures=[t_first,]
     for i in range(1,len(pressures)):
-        t = solve_VLE(temperatures[i-1],pressures[i],tc,pc,acentric,solving_for='temperature')
+        t = solve_VLE(temperatures[i-1],pressures[i],tc,pc,acentric,method=method,alfa_function=alfa_function,solving_for='temperature')
         temperatures.append(t)
     temperatures = array(temperatures)
     
@@ -57,7 +57,7 @@ def pt(tc,pc,acentric,p_0=1,t_0=298,pvt=False):
     legend(['L-V','Critical pressure'])
     
 
-def tv(P,tc,pc,acentric,t_0=298,pvt=False,temperatures_array=None):
+def tv(P,tc,pc,acentric,t_0=298,method='pr',alfa_function='alfa_peng_robinson',pvt=False,temperatures_array=None):
     volumes = []
     if(pvt):
         temp = temperatures_array
@@ -67,7 +67,7 @@ def tv(P,tc,pc,acentric,t_0=298,pvt=False,temperatures_array=None):
     R=83.14
     temperatures=[]
     for t in temp:
-        x=solve_eos(t,P,tc,pc,acentric,diagram=True)
+        x=solve_eos(t,P,tc,pc,acentric,method=method,alfa_function=alfa_function,diagram=True)
         if(isinstance(x,tuple)):
             volumes.append(x[0]*R*t/P)
             volumes.append(x[1]*R*t/P)
@@ -90,14 +90,14 @@ def tv(P,tc,pc,acentric,t_0=298,pvt=False,temperatures_array=None):
     
     return 0 
 
-def pvt(tc,pc,acentric,t_0=298,p_0=1):
+def pvt(tc,pc,acentric,t_0=298,p_0=1,method='pr',alfa_function='alfa_peng_robinson'):
     temp = linspace(t_0,tc)
     general_pressures=array([])
     general_volumes=array([])
     general_temperatures=array([])
     i=1
     for T in temp:
-        pressures,volumes = pv(T,tc,pc,acentric,p_0=1,pvt=True)
+        pressures,volumes = pv(T,tc,pc,acentric,p_0=1,method=method,alfa_function=alfa_function,pvt=True)
         aux=zeros(pressures.shape)
         aux.fill(T)
         general_volumes=append(general_volumes,volumes)
