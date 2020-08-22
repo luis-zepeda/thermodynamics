@@ -90,7 +90,7 @@ def tv(P,tc,pc,acentric,t_0=298,method='pr',alfa_function='alfa_peng_robinson',p
     
     return 0 
 
-def pvt(tc,pc,acentric,t_0=298,p_0=1,method='pr',alfa_function='alfa_peng_robinson'):
+def pvt(tc,pc,acentric,t_0=298,p_0=1,method='pr',alfa_function='alfa_peng_robinson', atomo4=False):
     temp = linspace(t_0,tc)
     general_pressures=array([])
     general_volumes=array([])
@@ -105,6 +105,9 @@ def pvt(tc,pc,acentric,t_0=298,p_0=1,method='pr',alfa_function='alfa_peng_robins
         general_temperatures=append(general_temperatures,aux)
         
     general_volumes=log10(general_volumes)
+
+    if (atomo4):
+        return (general_volumes, general_temperatures, general_pressures)
     
     #plotly.offline.init_notebook_mode()
     #fig = go.Figure(data=[go.Surface(z=general_pressures, x=general_volumes, y=general_temperatures)])
