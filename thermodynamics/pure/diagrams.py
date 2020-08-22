@@ -57,7 +57,7 @@ def pt(tc,pc,acentric,p_0=1,t_0=298,method='pr',alfa_function='alfa_peng_robinso
     legend(['L-V','Critical pressure'])
     
 
-def tv(P,tc,pc,acentric,t_0=298,method='pr',alfa_function='alfa_peng_robinson',pvt=False,temperatures_array=None):
+def tv(P,tc,pc,acentric,t_0=298,method='pr',alfa_function='alfa_peng_robinson',pvt=False,temperatures_array=None, atomo4=False):
     volumes = []
     if(pvt):
         temp = temperatures_array
@@ -79,7 +79,7 @@ def tv(P,tc,pc,acentric,t_0=298,method='pr',alfa_function='alfa_peng_robinson',p
             volumes.append(x*R*t/P)
             temperatures.append(t)
 
-    if(pvt):
+    if(pvt or atomo4):
         return (temperatures,volumes)
     
     scatter(log10(volumes),temperatures)

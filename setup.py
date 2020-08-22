@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="thermodynamics",
-    version="0.0.75",
+    version="0.0.77",
     author="Luis Zepeda",
     author_email="luiszepedavarela@comunidad.unam.mx",
     description="Thermodynamic calculations for pure substance and mixtures",
