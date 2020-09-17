@@ -27,7 +27,15 @@ def pressure_composition(t,tc,pc,acentric,kij,method='pr',alfa_function='alfa_pe
         dew_pressures.append(aux2[1])
 
     if(atomo4):
-        return (liq_compositions[:,:1], vap_compositions[:,:1])
+        liquid = []
+        vapor = []
+        for ele in liq_compositions[:,:1]:
+            liquid.append(float(ele))
+        
+        for ele in vap_compositions[:,:1]:
+            vapor.append(float(ele))
+
+        return ([liquid, list(bubble_pressures)], [vapor, list(dew_pressures)])
 
     figure(num=None, figsize=(8, 6), dpi=80, facecolor='w', edgecolor='k')
     plot(liq_compositions[:,:1],bubble_pressures,'b',label='Bubble line')
@@ -61,7 +69,15 @@ def temperature_composition(p,tc,pc,acentric,kij,method='pr',alfa_function='alfa
         dew_temperatures.append(aux2[0])
 
     if(atomo4):
-        return (liq_compositions[:,:1], vap_compositions[:,:1])
+        liquid = []
+        vapor = []
+        for ele in liq_compositions[:,:1]:
+            liquid.append(float(ele))
+        
+        for ele in vap_compositions[:,:1]:
+            vapor.append(float(ele))
+
+        return ([liquid, list(bubble_temperatures)], [vapor, list(dew_temperatures)])
       
     figure(num=None, figsize=(8, 6), dpi=80, facecolor='w', edgecolor='k')
     plot(liq_compositions[:,:1],bubble_temperatures,'b',label='Bubble line')
