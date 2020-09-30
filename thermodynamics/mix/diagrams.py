@@ -4,7 +4,7 @@ from matplotlib.pyplot import scatter, axhline, xlabel, ylabel, legend, plot,fig
 
 
 
-def pt(tc,pc,acentric,liq_compositions,vap_compositions,kij,method='pr',alfa_function='alfa_peng_robinson',mixing_rule='van_der_waals',points=100):
+def pt(tc,pc,acentric,liq_compositions,vap_compositions,kij,method='pr',alfa_function='alfa_peng_robinson',mixing_rule='van_der_waals',points=100, atomo4=False):
     tc = array(tc)
     pc=array(pc)
     max_pressure = max(pc)
@@ -26,6 +26,11 @@ def pt(tc,pc,acentric,liq_compositions,vap_compositions,kij,method='pr',alfa_fun
             break
         bubble_temperatures.append(aux1[0])
         dew_temperatures.append(aux2[0])
+
+    if (atomo4):
+        liquid = [list(bubble_temperatures), list(pressures[:len(bubble_temperatures)])]
+        vapor = [list(dew_temperatures), list(pressures[:len(dew_temperatures)])]
+        return (liquid, vapor)
 
     #figure(num=None, figsize=(8, 6), dpi=80, facecolor='w', edgecolor='k')
     plot(bubble_temperatures,pressures[:len(bubble_temperatures)],'b',label='Bubble line')
