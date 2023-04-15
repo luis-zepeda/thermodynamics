@@ -40,10 +40,10 @@ def pv(T,tc,pc,acentric,p_0=1,method='pr',alfa_function='alfa_peng_robinson',pvt
 def pt(tc,pc,acentric,p_0=1,t_0=298,method='pr',alfa_function='alfa_peng_robinson',pvt=False):
     R=83.14
     pressures = linspace(p_0,pc)
-    t_first = solve_VLE(300,pressures[0],tc,pc,acentric,method=method,alfa_function=alfa_function,solving_for='temperature')
+    t_first = solve_VLE(300,pressures[0],tc,pc,acentric,method=method,alfa=alfa_function,solving_for='temperature')
     temperatures=[t_first,]
     for i in range(1,len(pressures)):
-        t = solve_VLE(temperatures[i-1],pressures[i],tc,pc,acentric,method=method,alfa_function=alfa_function,solving_for='temperature')
+        t = solve_VLE(temperatures[i-1],pressures[i],tc,pc,acentric,method=method,alfa=alfa_function,solving_for='temperature')
         temperatures.append(t)
     temperatures = array(temperatures)
     

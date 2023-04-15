@@ -1,4 +1,4 @@
-from numpy import sqrt, arccos, absolute, cos, pi
+from numpy import sqrt, arccos, absolute, cos, pi, log, exp
 
 def cubic_solver_not_used(coefficients,diagram,B):
     alfa,beta,gamma = coefficients
@@ -74,4 +74,43 @@ def cubic_solver(coefficients,diagram,B):
     else:
         raise Exception("cubic solver error")
     
-        
+
+def validate_vap_solution(A, B, A_0, rho_0, z, u, w):
+    rho = B/z
+    F_vap = F(rho, A, B, u, w)
+    first_vap_condition = (A/B) < A_0
+    second_vap_condition = rho < rho_0 and F_vap > 0.1
+    is_z_vap_valid = first_vap_condition or second_vap_condition
+
+    if(not is_z_vap_valid):
+        rho_1 = 0.1
+        F_1 = (rho_1/(1-rho_1)) - (((A/B)*rho_1**2) / (1+u*rho_1+w*rho_1**2))
+        F_2 = (F_vap*((rho_0-rho_1)/2)-F_1) / (F_1**2*((rho_0-rho_1)/2)**2)
+        F_3 = 2*F_2*rho_1+F_vap/(F_1**2)
+        F_0 = (1/F_1)+F_3*rho_1-F_2*rho_1**2
+        print(F_3**2-4*F_2*(F_0-(1/B)))
+        new_rho = (F_3-sqrt(F_3**2-4*F_2*(F_0-(1/B))))/(2*F_2)
+        z = B/new_rho
+    return z
+
+def validate_liq_solution(A, B, A_0, rho_0, z, u, w):
+    rho = B/z
+    F_liq = F(rho, A, B, u, w)
+    first_liq_condition = rho > rho_0
+    second_liq_condition = F_liq > 0.1
+    is_z_liq_valid = first_liq_condition and second_liq_condition
+    
+    if(not is_z_liq_valid):
+        rho_1 = 0.8
+        F_1 = (rho_1/(1-rho_1)) - (((A/B)*rho_1**2) / (1+u*rho_1+w*rho_1**2))
+        F_2 = (rho_1-0.7*rho_0)*F_liq
+        F_0 = F_1-F_2*log(rho_1-0.7*rho_0)
+        new_rho = exp((B-F_0)/F_2)+0.7*rho_0
+        z = B/new_rho
+        B_0 = (new_rho/(1-new_rho)) - ((A*new_rho**2)/(B*(1+u*new_rho+w*new_rho**2)))
+        return (z, B_0)
+    
+    return z
+
+def F(rho, A, B, u, w):
+    return (1/(1-rho)**2)-(((A/B)*rho*(2+u*rho))/(1+u*rho+w*rho**2)**2)

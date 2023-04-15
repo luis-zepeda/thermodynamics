@@ -116,8 +116,8 @@ def bubble_pressure(t,p,tc,pc,acentric,liq_compositions,vap_compositions,kij,del
     new_vap_compositions = vap_compositions
   
     while(absolute(E) >= 1e-9):
-        if(attempts == 100):
-            return 'Probleam can not be solved'
+        if(attempts == 500):
+            return 'Problem can not be solved'
         p0=new_p*(1+delta_p)
         liq_fugacity_coef0,vap_fugacity_coef0 = solve_eos(t,p0,tc,pc,acentric,liq_compositions,new_vap_compositions,kij,method,alfa_function,mixing_rule)
         Ki0 =  liq_fugacity_coef0/vap_fugacity_coef0
@@ -145,7 +145,7 @@ def dew_temperature(t,p,tc,pc,acentric,liq_compositions,vap_compositions,kij,del
 
     while(absolute(E) >= 1e-9):
         if(attempts == 500):
-            return 'Probleam can not be solved'
+            return 'Problem can not be solved'
         t0 = new_t + delta_t
         liq_fugacity_coef0,vap_fugacity_coef0 = solve_eos(t0,p,tc,pc,acentric,new_liq_compositions,vap_compositions,kij,method,alfa_function,mixing_rule)
         Ki0 =  liq_fugacity_coef0/vap_fugacity_coef0
@@ -172,8 +172,8 @@ def dew_pressure(t,p,tc,pc,acentric,liq_compositions,vap_compositions,kij,delta_
     new_liq_compositions = liq_compositions
   
     while(absolute(E) >= 1e-9):
-        if(attempts == 100):
-            return 'Probleam can not be solved'
+        if(attempts == 500):
+            return 'Problem can not be solved'
         p0=new_p*(1+delta_p)
         liq_fugacity_coef0,vap_fugacity_coef0 = solve_eos(t,p0,tc,pc,acentric,new_liq_compositions,vap_compositions,kij,method,alfa_function,mixing_rule)
         Ki0 =  liq_fugacity_coef0/vap_fugacity_coef0
